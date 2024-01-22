@@ -1,0 +1,55 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity SumadorRestador is
+    Port ( C2, C1, C0, B : in STD_LOGIC;
+           S3, S2, S1, S0 : out STD_LOGIC;
+           Billete_Presencia : in STD_LOGIC;
+           Vuelto : out STD_LOGIC_VECTOR(2 downto 0);
+           Display : out STD_LOGIC_VECTOR(2 downto 0));
+end SumadorRestador;
+
+architecture Behavioral of SumadorRestador is
+    signal S_adder_out, S1, S2, S3 : STD_LOGIC_VECTOR(3 downto 0);
+    signal Vuelto_Calc : STD_LOGIC_VECTOR(2 downto 0);
+
+begin
+    -- Sumador de 4 bits usando dos sumadores 74283
+    process(C2, C1, C0, B)
+    begin
+        S1 <= (others => '0') when (B = '0') else ('0' & not C2 & not C1 & not C0) + ('0' & not C2 & not C1 & C0) + ('0' & not C2 & C1 & not C0) + ('0' & not C2 & C1 & C0) + ('0' & C2 & not C1 & not C0) + ('0' & C2 & not C1 & C0) + ('0' & C2 & C1 & not C0) + ('0' & C2 & C1 & C0);
+        S2 <= (others => '0') when (B = '0') else ('0' & not C2 & not C1 & not C0) + ('0' & not C2 & not C1 & C0) + ('0' & not C2 & C1 & not C0) + ('0' & not C2 & C1 & C0) + ('0' & C2 & not C1 & not C0) + ('0' & C2 & not C1 & C0) + ('0' & C2 & C1 & not C0);
+        S3 <= (others => '0') when (B = '0') else ('0' & not C2 & not C1 & not C0) + ('0' & not C2 & not C1 & C0) + ('0' & not C2 & C1 & not C0) + ('0' & not C2 & C1 & C0);
+        S_adder_out <= (others => '0') when (B = '0') else ('0' & not C2 & not C1 & not C0) + ('0' & not C2 & not C1 & C0) + ('0' & not C2 & C1 & not C0) + ('0' & not C2 & C1 & C0);
+
+        S0 <= S_adder_out(0);
+        S1 <= S_adder_out(1);
+        S2 <= S_adder_out(2);
+        S3 <= S_adder_out(3);
+    end process;
+
+    -- Restador del codificador de prioridad
+    process(Billete_Presencia, S1, C2, C1, C0)
+    begin
+        Vuelto_Calc <= (others => '0');
+        Display <= (others => '0');
+
+        if Billete_Presencia = '1' then
+            case (C2 & C1 & C0) is
+                when "001" =>
+                    Vuelto_Calc <= "100";
+                when "011" =>
+                    Vuelto_Calc <= "010";
+                when "100" =>
+                    Vuelto_Calc <= "001";
+                when others =>
+                    Vuelto_Calc <= "000";
+            end case;
+        end if;
+
+        Vuelto <= Vuelto_Calc;
+    end process;
+
+end Behavioral;

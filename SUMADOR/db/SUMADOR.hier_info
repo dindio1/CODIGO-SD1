@@ -1,0 +1,15 @@
+|SUMADOR
+C2 => ~NO_FANOUT~
+C1 => ~NO_FANOUT~
+C0 => ~NO_FANOUT~
+B[0] => Equal0.IN5
+B[1] => Equal0.IN4
+B[2] => Equal0.IN3
+S2 <= Equal0.DB_MAX_OUTPUT_PORT_TYPE
+S1 <= Equal0.DB_MAX_OUTPUT_PORT_TYPE
+S0 <= <GND>
+Vuelto[0] <= <GND>
+Vuelto[1] <= <GND>
+Vuelto[2] <= <GND>
+
+
